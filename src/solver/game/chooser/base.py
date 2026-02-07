@@ -12,28 +12,18 @@ class Chooser(ABC):
     evaluation and experimentation.
     """
 
-    def __init__(self, valid_words: List[str]) -> None:
-        """
-        Initialize the chooser with a list of possible target words.
-
-        Args:
-            valid_words: A list containing all valid words that can be
-                selected as the hidden target word.
-
-        Raises:
-            ValueError: If the provided list of target words is empty.
-        """
-        if not valid_words:
-            raise ValueError("valid_words cannot be empty")
-
-        self.valid_words: List[str] = valid_words
-
     @abstractmethod
-    def choose(self) -> str:
+    def choose(self, valid_words: List[str]) -> str:
         """
         Select and return one target word from the available pool.
 
+        Args:
+            valid_words: List of words eligible to be selected as the target.
+
         Returns:
             A string representing the selected target word.
+
+        Raises:
+            ValueError: If the valid_words list is empty.
         """
         ...

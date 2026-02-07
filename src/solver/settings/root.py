@@ -35,13 +35,15 @@ class Settings(BaseSettings):
     )
 
     game: GameSettings = Field(
-        default=GameSettings, description="Configuration related to the Wordle game."
+        default_factory=GameSettings,
+        description="Configuration related to the Wordle game.",
     )
     logging: LoggingSettings = Field(
-        default=LoggingSettings,
+        default_factory=LoggingSettings,
         description="Configuration related to logging.",
     )
 
     path: PathSettings = Field(
-        default=PathSettings, description="Configuration related to path handling."
+        default_factory=PathSettings,
+        description="Configuration related to path handling.",
     )

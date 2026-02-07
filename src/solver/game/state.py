@@ -63,3 +63,17 @@ class GameState:
         out_of_turns = self.turn >= self.max_turns
 
         return solved or out_of_turns
+
+    @property
+    def won(self) -> bool:
+        """
+        Whether the game has been won.
+
+        Returns:
+            bool: True if the last guess matched the answer, otherwise False.
+        """
+        if not self.history:
+            return False
+
+        _, last_feedback = self.history[-1]
+        return last_feedback == WIN_FEEDBACK

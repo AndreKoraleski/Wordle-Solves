@@ -5,10 +5,12 @@ description = "A repository containing a bunch of ways of solving the popular ga
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "matplotlib>=3.10.8",
     "numpy>=2.4.2",
     "pandas>=3.0.0",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
+    "seaborn>=0.13.2",
 ]
 
 [dependency-groups]

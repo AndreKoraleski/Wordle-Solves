@@ -43,9 +43,9 @@ class PathSettings(BaseModel):
         """
 
         if self.word_bank_csv is None:
-            self.word_bank_csv_path = self.data_folder / "word-bank.csv"
+            self.word_bank_csv = self.data_folder / "word-bank.csv"
 
         if self.valid_words_csv is None:
-            self.valid_words_csv_path = self.data_folder / "valid-words.csv"
+            self.valid_words_csv = self.data_folder / "valid-words.csv"
 
         return self

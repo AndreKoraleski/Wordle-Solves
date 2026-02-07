@@ -5,7 +5,7 @@ from solver.game.state import GameState
 from solver.strategy.base import Solver
 
 
-class RandomUniform(Solver):
+class RandomUniformSolver(Solver):
     """
     Solver implementation that selects a guess uniformly at random.
 
@@ -15,7 +15,7 @@ class RandomUniform(Solver):
     """
 
     def __init__(
-        self, rng_seed: Optional[int] = None, choose_from_all: bool = False
+        self, rng_seed: Optional[int] = None, choose_from_answers: bool = False
     ) -> None:
         """
         Initialize the solver with optional deterministic randomness.
@@ -23,13 +23,13 @@ class RandomUniform(Solver):
         Args:
             rng_seed: Optional seed used to initialize the random number
                 generator for reproducible guess selection.
-            choose_from_all: If True, guesses are sampled from the entire
-                word bank. Otherwise, guesses are sampled only from the
-                valid answer list.
+            choose_from_answers: If True, guesses are sampled from the valid
+                answer list only. Otherwise, guesses are sampled from the
+                entire word bank (all allowed guesses).
         """
         super().__init__()
         self.random: Random = Random(rng_seed)
-        self.choose_from_all: bool = choose_from_all
+        self.choose_from_answers: bool = choose_from_answers
 
     def guess(self, state: GameState) -> str:
         """
@@ -41,7 +41,7 @@ class RandomUniform(Solver):
         Returns:
             str: A randomly selected guess word.
         """
-        if self.choose_from_all:
-            return self.random.choice(state.word_bank)
+        if self.choose_from_answers:
+            return self.random.choice(state.valid_words)
 
-        return self.random.choice(state.valid_words)
+        return self.random.choice(state.word_bank)

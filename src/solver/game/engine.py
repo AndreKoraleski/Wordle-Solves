@@ -50,14 +50,16 @@ class GameEngine:
         self.chooser = chooser
         self.solver = solver
 
-        self.feedback_encode_table = build_feedback_encode_table()
-        self.feedback_decode_table = build_feedback_decode_table()
-
         # Initialize state
         self.state = GameState()
         self.state.valid_words = load_words(self.paths.valid_words_csv)
         self.state.word_bank = load_words(self.paths.word_bank_csv)
         self.state.max_turns = self.settings.max_turns
+
+        self.feedback_encode_table = build_feedback_encode_table(
+            self.state.word_bank, self.state.valid_words
+        )
+        self.feedback_decode_table = build_feedback_decode_table()
 
         logger.info("Game engine initialized.")
 
@@ -77,7 +79,10 @@ class GameEngine:
 
         guess = self.solver.guess(self.state)
 
-        feedback = self.feedback_encode_table[guess][self.state.answer]
+        guess_index = self.state.word_bank.index(guess)
+        answer_index = self.state.valid_words.index(self.state.answer)
+
+        feedback = self.feedback_encode_table[guess_index][answer_index]
 
         self.state.history.append((guess, feedback))
 
@@ -120,7 +125,7 @@ class GameEngine:
         """
         logger.debug("Resetting game state and solver.")
         self.state.history.clear()
-        self.state.answer = self.chooser.choose()
+        self.state.answer = self.chooser.choose(self.state.valid_words)
         logger.debug(f"New answer chosen: {self.state.answer}")
 
         if hasattr(self.solver, "reset") and callable(self.solver.reset):
