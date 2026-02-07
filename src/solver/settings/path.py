@@ -24,18 +24,16 @@ class PathSettings(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     data_folder: Path = Field(
-        default=Path("data"),
-        description="Directory containing project data files."
+        default=Path("data"), description="Directory containing project data files."
     )
 
     word_bank_csv: Path | None = Field(
-        default=None,
-        description="Path to the Wordle solution word bank CSV file."
+        default=None, description="Path to the Wordle solution word bank CSV file."
     )
 
     valid_words_csv: Path | None = Field(
         default=None,
-        description="Path to the CSV file containing all valid Wordle guesses."
+        description="Path to the CSV file containing all valid Wordle guesses.",
     )
 
     @model_validator(mode="after")

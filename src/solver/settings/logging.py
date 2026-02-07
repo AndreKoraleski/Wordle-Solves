@@ -31,9 +31,7 @@ class LoggingSettings(BaseModel):
         format (str): The format for log messages as a string.
     """
 
-    model_config = ConfigDict(
-        extra="ignore"
-    )
+    model_config = ConfigDict(extra="ignore")
 
     level: LogLevel = Field(
         default=LogLevel.INFO,
