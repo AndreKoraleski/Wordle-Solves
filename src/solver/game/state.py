@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple
 
 
 WIN_FEEDBACK: int = 242
-DEFAULT_MAX_TURNS: int = 6
 
 
 @dataclass
@@ -23,7 +22,7 @@ class GameState:
     answer: Optional[str] = None
     word_bank: List[str] = field(default_factory=list)
     valid_words: List[str] = field(default_factory=list)
-    max_turns: int = DEFAULT_MAX_TURNS
+    max_turns: int = 6
 
     @property
     def turn(self) -> int:
