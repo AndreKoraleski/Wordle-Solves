@@ -1,6 +1,8 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from solver.settings.game import GameSettings
+from solver.settings.logging import LoggingSettings
 from solver.settings.path import PathSettings
 
 
@@ -17,6 +19,8 @@ class Settings(BaseSettings):
     New settings should be added to this class as they become necessary.
 
     Attributes:
+        game (GameSettings): Configuration related to the Wordle game.
+        logging (LoggingSettings): Configuration related to logging.
         path (PathSettings): Configuration related to path handling.
     """
 
@@ -28,6 +32,14 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         env_ignore_empty=True,  # If the variable is empty, it's treated as not set
         validate_assignment=True,
+    )
+
+    game: GameSettings = Field(
+        default=GameSettings, description="Configuration related to the Wordle game."
+    )
+    logging: LoggingSettings = Field(
+        default=LoggingSettings,
+        description="Configuration related to logging.",
     )
 
     path: PathSettings = Field(

@@ -31,7 +31,7 @@ class RandomUniform(Solver):
         self.random: Random = Random(rng_seed)
         self.choose_from_all: bool = choose_from_all
 
-    def solve(self, state: GameState) -> str:
+    def guess(self, state: GameState) -> str:
         """
         Select and return a random guess word.
 

@@ -12,7 +12,7 @@ class Solver(ABC):
     """
 
     @abstractmethod
-    def solve(self, state: GameState) -> str:
+    def guess(self, state: GameState) -> str:
         """
         Produce the next guess based on the current game state.
 
