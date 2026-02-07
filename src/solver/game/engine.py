@@ -1,4 +1,5 @@
 from logging import getLogger
+from pathlib import Path
 
 from solver.game.chooser.base import Chooser
 from solver.game.feedback import (
@@ -6,6 +7,7 @@ from solver.game.feedback import (
     build_feedback_encode_table,
 )
 from solver.game.state import GameState
+from solver.utility.cache import get_cache_key, load_from_cache, save_to_cache
 from solver.utility.load_words import load_words
 from solver.strategy.base import Solver
 from solver.settings.game import GameSettings
@@ -56,10 +58,33 @@ class GameEngine:
         self.state.word_bank = load_words(self.paths.word_bank_csv)
         self.state.max_turns = self.settings.max_turns
 
-        self.feedback_encode_table = build_feedback_encode_table(
-            self.state.word_bank, self.state.valid_words
+        # Build index dictionaries
+        self.state.word_bank_index = {word: i for i, word in enumerate(self.state.word_bank)}
+        self.state.valid_word_index = {word: i for i, word in enumerate(self.state.valid_words)}
+
+        # Load or build feedback tables with caching
+        cache_dir = Path(".cache")
+        cache_key = get_cache_key(
+            Path(self.paths.word_bank_csv),
+            Path(self.paths.valid_words_csv)
         )
-        self.feedback_decode_table = build_feedback_decode_table()
+        
+        cached_tables = load_from_cache(cache_dir, cache_key)
+        if cached_tables is not None:
+            logger.info("Loading feedback tables from cache.")
+            self.state.feedback_encode_table, self.state.feedback_decode_table = cached_tables
+        else:
+            logger.info("Building feedback tables (this may take a moment)...")
+            self.state.feedback_encode_table = build_feedback_encode_table(
+                self.state.word_bank, self.state.valid_words
+            )
+            self.state.feedback_decode_table = build_feedback_decode_table()
+            save_to_cache(
+                cache_dir,
+                cache_key,
+                (self.state.feedback_encode_table, self.state.feedback_decode_table)
+            )
+            logger.info("Feedback tables cached for future use.")
 
         logger.info("Game engine initialized.")
 
@@ -79,16 +104,16 @@ class GameEngine:
 
         guess = self.solver.guess(self.state)
 
-        guess_index = self.state.word_bank.index(guess)
-        answer_index = self.state.valid_words.index(self.state.answer)
+        guess_index = self.state.word_bank_index[guess]
+        answer_index = self.state.valid_word_index[self.state.answer]
 
-        feedback = self.feedback_encode_table[guess_index][answer_index]
+        feedback = self.state.feedback_encode_table[guess_index][answer_index]
 
         self.state.history.append((guess, feedback))
 
         logger.info(
             f"Turn {len(self.state.history)}: Guess='{guess}', "
-            f"Feedback='{self.feedback_decode_table[feedback]}'"
+            f"Feedback='{self.state.feedback_decode_table[feedback]}'"
         )
 
         return guess, feedback

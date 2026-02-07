@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
+
+from numpy import ndarray
 
 
 WIN_FEEDBACK: int = 242
@@ -16,6 +18,12 @@ class GameState:
         word_bank (List[str]): List of all allowed guess words.
         valid_words (List[str]): List of all current valid answer words.
         max_turns (int): Maximum number of guesses allowed.
+        feedback_encode_table (Optional[ndarray]): Precomputed table mapping
+            (guess_index, answer_index) to encoded feedback.
+        feedback_decode_table (Optional[dict[int, str]]): Precomputed mapping from
+            encoded feedback values to human-readable feedback strings.
+        word_bank_index (Dict[str, int]): Mapping from word to its index in word_bank.
+        valid_word_index (Dict[str, int]): Mapping from word to its index in valid_words.
     """
 
     history: List[Tuple[str, int]] = field(default_factory=list)
@@ -23,6 +31,10 @@ class GameState:
     word_bank: List[str] = field(default_factory=list)
     valid_words: List[str] = field(default_factory=list)
     max_turns: int = 6
+    feedback_encode_table: Optional[ndarray] = None
+    feedback_decode_table: Optional[dict[int, str]] = None
+    word_bank_index: Dict[str, int] = field(default_factory=dict)
+    valid_word_index: Dict[str, int] = field(default_factory=dict)
 
     @property
     def turn(self) -> int:
