@@ -152,8 +152,9 @@ class GameEngine:
         logger.debug(f"New answer chosen: {self.state.answer}")
 
         self.solver.reset()
+        logger.debug("Solver state reset.")
 
-    def _build_index_dictionary(word_list: list[str]) -> dict[str, int]:
+    def _build_index_dictionary(self, word_list: list[str]) -> dict[str, int]:
         """
         Build a dictionary mapping words to their indices in the provided list.
 

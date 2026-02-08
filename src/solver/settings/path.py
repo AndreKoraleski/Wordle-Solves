@@ -14,11 +14,24 @@ class PathSettings(BaseModel):
         data_folder (Path):
             Directory containing data files.
 
+        statistics_folder (Path):
+            Directory for storing aggregated statistics and summaries.
+
+        statistics_runs_folder (Path):
+            Directory for individual benchmark run results.
+
+        statistics_comparisons_folder (Path):
+            Directory for strategy comparison reports.
+
+        cache_folder (Path):
+            Directory for storing cached data.
+
         word_bank_csv (Path):
             Path to the Wordle solution word bank CSV file.
 
         valid_words_csv (Path):
             Path to the CSV file containing all valid Wordle guesses.
+
     """
 
     model_config = ConfigDict(extra="ignore")
@@ -30,6 +43,16 @@ class PathSettings(BaseModel):
     statistics_folder: Path = Field(
         default=Path("statistics"),
         description="Directory for storing aggregated statistics and summaries.",
+    )
+
+    statistics_runs_folder: Path = Field(
+        default=Path("statistics/runs"),
+        description="Directory for individual benchmark run results.",
+    )
+
+    statistics_comparisons_folder: Path = Field(
+        default=Path("statistics/comparisons"),
+        description="Directory for strategy comparison reports.",
     )
 
     cache_folder: Path = Field(
