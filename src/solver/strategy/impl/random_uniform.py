@@ -45,3 +45,9 @@ class RandomUniformSolver(Solver):
             return self.random.choice(state.valid_words)
 
         return self.random.choice(state.word_bank)
+
+    def reset(self) -> None:
+        """
+        Reset any internal solver state for a new game.
+        """
+        pass

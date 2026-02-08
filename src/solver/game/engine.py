@@ -151,9 +151,7 @@ class GameEngine:
         self.state.answer = self.chooser.choose(self.state.valid_words)
         logger.debug(f"New answer chosen: {self.state.answer}")
 
-        if hasattr(self.solver, "reset") and callable(self.solver.reset):
-            self.solver.reset()
-            logger.debug("Solver reset called.")
+        self.solver.reset()
 
     def _build_index_dictionary(word_list: list[str]) -> dict[str, int]:
         """

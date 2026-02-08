@@ -23,3 +23,10 @@ class Solver(ABC):
             str: A valid 5-letter lowercase guess.
         """
         ...
+
+    @abstractmethod
+    def reset(self) -> None:
+        """
+        Reset any internal solver state for a new game.
+        """
+        ...
