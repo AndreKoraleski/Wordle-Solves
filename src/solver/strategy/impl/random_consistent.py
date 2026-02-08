@@ -19,7 +19,7 @@ class RandomConsistentSolver(Solver):
         Initialize the solver with optional deterministic randomness.
 
         Args:
-            rng_seed: Optional seed used to initialize the random number
+            rng_seed (Optional[int]): Optional seed used to initialize the random number
                 generator for reproducible guess selection.
         """
         super().__init__()
@@ -69,9 +69,8 @@ class RandomConsistentSolver(Solver):
         self.candidates = [
             word
             for word in self.candidates
-            if state.feedback_encode_table[guess_index][
-                state.valid_word_index[word]
-            ] == last_feedback
+            if state.feedback_encode_table[guess_index][state.valid_word_index[word]]
+            == last_feedback
         ]
 
         self._processed_turns += 1
