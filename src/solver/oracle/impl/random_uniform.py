@@ -1,12 +1,12 @@
 from random import Random
 from typing import List, Optional
 
-from solver.game.chooser.base import Chooser
+from solver.oracle.base import Oracle
 
 
-class RandomUniformChooser(Chooser):
+class RandomUniformOracle(Oracle):
     """
-    Chooser implementation that selects a target word uniformly at random
+    Oracle implementation that selects a target word uniformly at random
     from the list of valid words.
 
     This is the assumed classic way to choose a target.
@@ -14,7 +14,7 @@ class RandomUniformChooser(Chooser):
 
     def __init__(self, rng_seed: Optional[int] = None) -> None:
         """
-        Initialize the chooser with optional deterministic randomness.
+        Initialize the oracle with optional deterministic randomness.
 
         Args:
             rng_seed: Optional seed used to initialize the random number

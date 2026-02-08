@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 
-class Chooser(ABC):
+class Oracle(ABC):
     """
     Abstract base class responsible for selecting a target word
     for a Wordle game or simulation.

@@ -1,13 +1,13 @@
 from logging import getLogger
 
-from solver.game.chooser.base import Chooser
+from solver.oracle.base import Oracle
 from solver.game.feedback import (
     build_feedback_decode_table,
     build_feedback_encode_table,
 )
 from solver.game.state import GameState
-from solver.utility.cache import get_cache_key, load_from_cache, save_to_cache
-from solver.utility.load_words import load_words
+from solver.utility.io.cache import get_cache_key, load_from_cache, save_to_cache
+from solver.utility.io.load_data import load_words
 from solver.strategy.base import Solver
 from solver.settings.game import GameSettings
 from solver.settings.path import PathSettings
@@ -34,7 +34,7 @@ class GameEngine:
         self,
         settings: GameSettings,
         paths: PathSettings,
-        chooser: Chooser,
+        chooser: Oracle,
         solver: Solver,
     ) -> None:
         """
