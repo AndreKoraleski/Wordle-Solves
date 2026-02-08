@@ -27,6 +27,10 @@ class PathSettings(BaseModel):
         default=Path("data"), description="Directory containing project data files."
     )
 
+    cache_folder: Path = Field(
+        default=Path(".cache"), description="Directory for storing cached data."
+    )
+
     word_bank_csv: Path | None = Field(
         default=None, description="Path to the Wordle solution word bank CSV file."
     )

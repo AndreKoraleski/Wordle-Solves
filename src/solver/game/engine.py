@@ -1,5 +1,4 @@
 from logging import getLogger
-from pathlib import Path
 
 from solver.game.chooser.base import Chooser
 from solver.game.feedback import (
@@ -59,34 +58,15 @@ class GameEngine:
         self.state.max_turns = self.settings.max_turns
 
         # Build index dictionaries
-        self.state.word_bank_index = {word: i for i, word in enumerate(self.state.word_bank)}
-        self.state.valid_word_index = {word: i for i, word in enumerate(self.state.valid_words)}
-
-        # Load or build feedback tables with caching
-        cache_dir = Path(".cache")
-        cache_key = get_cache_key(
-            Path(self.paths.word_bank_csv),
-            Path(self.paths.valid_words_csv)
+        self.state.word_bank_index = self._build_index_dictionary(self.state.word_bank)
+        self.state.valid_word_index = self._build_index_dictionary(
+            self.state.valid_words
         )
-        
-        cached_tables = load_from_cache(cache_dir, cache_key)
-        if cached_tables is not None:
-            logger.info("Loading feedback tables from cache.")
-            self.state.feedback_encode_table, self.state.feedback_decode_table = cached_tables
-        else:
-            logger.info("Building feedback tables (this may take a moment)...")
-            self.state.feedback_encode_table = build_feedback_encode_table(
-                self.state.word_bank, self.state.valid_words
-            )
-            self.state.feedback_decode_table = build_feedback_decode_table()
-            save_to_cache(
-                cache_dir,
-                cache_key,
-                (self.state.feedback_encode_table, self.state.feedback_decode_table)
-            )
-            logger.info("Feedback tables cached for future use.")
 
-        logger.info("Game engine initialized.")
+        # Build feedback tables
+        self._build_feedback_tables()
+
+        logger.debug("Game engine initialized.")
 
     def play_turn(self) -> tuple[str, int]:
         """
@@ -111,7 +91,7 @@ class GameEngine:
 
         self.state.history.append((guess, feedback))
 
-        logger.info(
+        logger.debug(
             f"Turn {len(self.state.history)}: Guess='{guess}', "
             f"Feedback='{self.state.feedback_decode_table[feedback]}'"
         )
@@ -129,15 +109,15 @@ class GameEngine:
             GameState: Final state after game completion.
         """
         self.reset()
-        logger.info("Starting game execution.")
+        logger.debug("Starting game execution.")
 
         while not self.state.terminal:
             self.play_turn()
 
         if self.state.won:
-            logger.info(f"Game won in {len(self.state.history)} turns.")
+            logger.debug(f"Game won in {len(self.state.history)} turns.")
         else:
-            logger.info(f"Game lost. The answer was '{self.state.answer}'.")
+            logger.debug(f"Game lost. The answer was '{self.state.answer}'.")
 
         return self.state
 
@@ -156,3 +136,41 @@ class GameEngine:
         if hasattr(self.solver, "reset") and callable(self.solver.reset):
             self.solver.reset()
             logger.debug("Solver reset called.")
+
+    def _build_index_dictionary(word_list: list[str]) -> dict[str, int]:
+        """
+        Build a dictionary mapping words to their indices in the provided list.
+
+        Args:
+            word_list: List of words to index.
+
+        Returns:
+            Dictionary mapping each word to its index.
+        """
+        return {word: i for i, word in enumerate(word_list)}
+
+    def _build_feedback_tables(self) -> None:
+        """
+        Build feedback encoding and decoding tables, using cached versions if available.
+        """
+        cache_key = get_cache_key(self.paths.word_bank_csv, self.paths.valid_words_csv)
+        cached_tables = load_from_cache(self.paths.cache_folder, cache_key)
+
+        if cached_tables is not None:
+            logger.debug("Loading feedback tables from cache.")
+            self.state.feedback_encode_table, self.state.feedback_decode_table = (
+                cached_tables
+            )
+
+        else:
+            logger.debug("Building feedback tables (this may take a moment)...")
+            self.state.feedback_encode_table = build_feedback_encode_table(
+                self.state.word_bank, self.state.valid_words
+            )
+            self.state.feedback_decode_table = build_feedback_decode_table()
+            save_to_cache(
+                self.paths.cache_folder,
+                cache_key,
+                (self.state.feedback_encode_table, self.state.feedback_decode_table),
+            )
+            logger.debug("Feedback tables cached for future use.")
