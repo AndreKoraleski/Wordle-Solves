@@ -1,10 +1,12 @@
 from logging import getLogger
+from time import perf_counter_ns
 
 from solver.oracle.base import Oracle
 from solver.game.feedback import (
     build_feedback_decode_table,
     build_feedback_encode_table,
 )
+from solver.game.result import GameResult
 from solver.game.state import GameState
 from solver.utility.io.cache import get_cache_key, load_from_cache, save_to_cache
 from solver.utility.io.load_data import load_words
@@ -98,28 +100,44 @@ class GameEngine:
 
         return guess, feedback
 
-    def run(self) -> GameState:
+    def run(self, random_seed: int | None = None) -> GameResult:
         """
         Execute the game until termination.
 
         This method triggers a reset before starting to ensure a clean state
         and a fresh hidden answer.
 
+        Args:
+            random_seed: Optional seed value for reproducibility tracking.
+
         Returns:
-            GameState: Final state after game completion.
+            GameResult: Immutable record of the completed game.
         """
         self.reset()
         logger.debug("Starting game execution.")
 
+        # Track execution time
+        start_time = perf_counter_ns()
+
         while not self.state.terminal:
             self.play_turn()
+
+        end_time = perf_counter_ns()
+        duration_ns = end_time - start_time
 
         if self.state.won:
             logger.debug(f"Game won in {len(self.state.history)} turns.")
         else:
             logger.debug(f"Game lost. The answer was '{self.state.answer}'.")
 
-        return self.state
+        # Build and return immutable result
+        return GameResult(
+            answer=self.state.answer or "UNKNOWN",
+            won=self.state.won,
+            guesses=[guess for guess, _ in self.state.history],
+            duration_ns=duration_ns,
+            random_seed=random_seed,
+        )
 
     def reset(self) -> None:
         """

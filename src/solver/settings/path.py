@@ -27,6 +27,11 @@ class PathSettings(BaseModel):
         default=Path("data"), description="Directory containing project data files."
     )
 
+    statistics_folder: Path = Field(
+        default=Path("statistics"),
+        description="Directory for storing aggregated statistics and summaries.",
+    )
+
     cache_folder: Path = Field(
         default=Path(".cache"), description="Directory for storing cached data."
     )
